@@ -21,11 +21,15 @@ from scipy.stats import kurtosis, skew
 
 
 # Open the dataframe
+"""Navigate to the file that holds the data"""
 original_file = 'D:/US DATA/Master DATA 2.xlsx'
+
+"""Input the data from the file into a dataframe"""
 df = pd.read_excel(original_file)
 
 
 # Check data sample
+"""View the dataframe, to check it has imported correctly"""
 print()
 print('US Socioeconomics against Property crime by state in 2014')
 print('-'*100)
@@ -36,25 +40,18 @@ print()
 
 
 # Remove extraneous columns
+"""Remove the year column as it is not used in the model"""
 df = df.drop(['Year'], axis = 1)
 
 
 # Change Index
+"""Change the data to be indexed by state"""
 df.index = df['State']
 df = df.drop(['State'], axis = 1)
 
 
-# Check types
-print()
-print('The data type for each column in the dataframe')
-print('-'*100)
-print('-'*100)
-print(df.dtypes)
-print()
-print()
-
-
 # Check for missing values
+"""Check if there are any missing or nil values that have to be excluded from the model"""
 print()
 print('Assess the presence of any missing or nil values')
 print('-'*100)
@@ -67,6 +64,17 @@ print()
 print()
 
 
+# Check types
+"""Ensure that, following the removal of unneccessary columns, the columns are of the correct type (float in this case)"""
+print()
+print('The data type for each column in the dataframe')
+print('-'*100)
+print('-'*100)
+print(df.dtypes)
+print()
+print()
+
+
 # Rename Columns for ease of use going forward
 new_column_names = {'Population': 'POP_TOT',
                     'GDP (per capita)': 'GDP',
@@ -75,6 +83,7 @@ df = df.rename(columns = new_column_names)
 
 
 # Check for Multicolinearity
+"""Check that each of the columns are not substantially impacting/predetermining the values in another"""
 #corr = df.corr()
 #sns.heatmap(corr, xticklabels=corr.columns, yticklabels=corr.columns, cmap='PuOr_r')
 #plt.show()
@@ -103,6 +112,7 @@ print()
 
 
 # Check for Outliers
+"""Identify values that are more than 3 standard deviations from the mean"""
 desc_data =  df.describe()
 desc_data.loc['+3_std'] = desc_data.loc['mean'] + (desc_data.loc['std']*3)
 desc_data.loc['-3_std'] = desc_data.loc['mean'] - (desc_data.loc['std']*3)
@@ -122,6 +132,7 @@ print()
 X = df.drop('CRIME', axis = 1)
 Y = df[['CRIME']]
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.30, random_state=1)
+
 """ Create an instance of the model """
 regression_model = LinearRegression()
 regression_model.fit(X_train, y_train)
@@ -137,6 +148,7 @@ for coef in zip(X.columns, regression_model.coef_[0]):
     print("The Coefficient for " + f"{coef[0]}" + " is " + f"{coef[1]:.10}")
 print()
 print()
+
 """ Refitting model for evaluation """
 y_predict = regression_model.predict(X_test)
 X2 = sm.add_constant(X)
@@ -147,6 +159,7 @@ est.pvalues
 
 
 #Checking for Heteroscedasticity
+"""Consistent variance along the regression line"""
 _, pval, _, f_pval = diag.het_white(est.resid, est.model.exog)
 print(pval, f_pval)
 print()
@@ -179,7 +192,7 @@ print()
 
 
 # Check for Autocorrelation
-# Autocorrelation because of the use of successive years (Solution: remove all but one year?)
+"""Check to see if terms can effectively predict the terms that succeed them"""
 print()
 lag = min(10, (len(X)//5))
 print("Checking the probability of autocorrelation is lower than 5%")
@@ -196,6 +209,7 @@ else:
     print("We reject the null hypthoesis, so there is autocorrelation.")
 print()
 print()
+"""There is some autocorrelation probably, because of the use of successive years (Solution: remove all but one year?)"""
 
 
 # Check for Normal Distribution (mean of residuals = 0)
@@ -223,6 +237,7 @@ print("Mean Absolute Error: " + f"{model_mae}")
 print("Mean Squared Error: " + f"{model_mse}")
 print("Root Mean Squared Error: " + f"{model_rmse}")
 print()
+
 """ R-Squared """
 model_r2 = r2_score(y_test, y_predict)
 adj_r2 = (1 - (1 - model_r2) * ((len(X_train) - 1) / (len(X_train) - X.shape[1] - 1)))
@@ -233,7 +248,6 @@ print('-'*100)
 print("R-Squared Value: " + f"{model_r2}")
 print("Adjusted R-Squared Value: " + f"{adj_r2}")
 
-
 """Pickle the Model"""
 with open('my_multilinear_regression.sav', 'wb') as f:
     pickle.dump(regression_model, f)
@@ -241,7 +255,7 @@ with open('my_multilinear_regression.sav', 'rb') as pickle_file:
     regression_model_2 = pickle.load(pickle_file)
 
 
-
+# Operation that will predict the dependent variable based on the model and input values for independent variables
 print()
 print()
 while True:
