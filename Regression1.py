@@ -22,7 +22,7 @@ from scipy.stats import kurtosis, skew
 
 # Open the dataframe
 """Navigate to the file that holds the data"""
-original_file = 'D:/US DATA/Master DATA 2.xlsx'
+original_file = 'D:/DATA/US DATA/Master DATA 2.xlsx'
 
 """Input the data from the file into a dataframe"""
 df = pd.read_excel(original_file)
@@ -164,29 +164,17 @@ _, pval, _, f_pval = diag.het_white(est.resid, est.model.exog)
 print(pval, f_pval)
 print()
 if pval > 0.05:
-    print("For the White's Test")
+    print("For the Heteroscedasticity Test")
     print('-'*100)
     print('-'*100)
     print("The p-value was greater than 0.05 at " +  f"{pval:.4}")
     print("We fail to reject the null hypthoesis, so there is no heterosecdasticity. \n")    
 else:
-    print("For the White's Test")
+    print("For the Heteroscedasticity Test")
+    print('-'*100)
+    print('-'*100)
     print("The p-value was smaller than 0.05 at " +  f"{pval:.4}")
     print("We reject the null hypthoesis, so there is heterosecdasticity. \n")
-print()
-print()
-_, pval, _, f_pval = diag.het_breuschpagan(est.resid, est.model.exog)
-print(pval, f_pval)
-if pval > 0.05:
-    print("For the Breusch-Pagan's Test")
-    print('-'*100)
-    print('-'*100)
-    print("The p-value was greater than 0.05 at " +  f"{pval:.4}")
-    print("We fail to reject the null hypthoesis, so there is no heterosecdasticity.")
-else:
-    print("For the Breusch-Pagan's Test")
-    print("The p-value was smaller than 0.05 at " +  f"{pval:.4}")
-    print("We reject the null hypthoesis, so there is heterosecdasticity.")
 print()
 print()
 
@@ -254,6 +242,7 @@ with open('my_multilinear_regression.sav', 'wb') as f:
 with open('my_multilinear_regression.sav', 'rb') as pickle_file:
     regression_model_2 = pickle.load(pickle_file)
 
+os.system("pause")
 
 # Operation that will predict the dependent variable based on the model and input values for independent variables
 print()
